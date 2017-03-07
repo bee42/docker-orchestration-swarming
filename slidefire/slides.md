@@ -1133,16 +1133,25 @@ follow the us at [bee42.com](https://bee42.com)
 More Training: https://bee42.com/#scroll-top-trainings
 
 -
+### DevOpsGathering Konferenz
+
+![](images/Logo_DevOps_DOG_1024x512.png)
+
+***
+* 16.3 Docker Meetup Bochum - Docker Birthday Party Zalando
+* 23-25.3 DevOpsGathering Konferenz - Bochum
+  * https://devops-gathering.io
+
+-
 ### Docker DevOps Camp
 
 ![](images/dev_ops_camp_1024x512.png)
 
-* 16.3 Docker Meetup Bochum - Docker Birthday Party Zalando
-* 23-25.3 DevOpsGathering Konferenz - Bochum
+* 9-11.5 Docker DevOps Camp  - Berlin
+* 27-29.6 Docker DevOps Camp  - Berlin
 
 ***
-* https://bee42.com
-* https://devops-gathering.io
+* https://bee42.com/#scroll-top-trainings
 
 -
 ### bee42 solutions gmbh - Devops Bochum
@@ -1158,6 +1167,8 @@ We offer TOP-IT jobs...
 -
 #### DevOps Engineer
 
+![](images/bee42_logo.png)
+
 * Living an Agile culture
 * Influence us to DevOps-Journey
 * Enable people to use modern technologies
@@ -1170,6 +1181,8 @@ We offer TOP-IT jobs...
 
 -
 #### Website Engineer
+
+![](images/bee42_logo.png)
 
 * Create beautiful human responsive services
 * Find new ways to create creative web service
