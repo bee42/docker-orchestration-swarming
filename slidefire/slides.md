@@ -92,7 +92,8 @@ From monolith to µService
 * Portability
   * Build in one environment, distributed and run on many others
 * Scalability
-  * Easy to spin up new containers or migrate to more powerful features
+  * Easy to spin up new containers
+  * Fast migrate to more powerful features
 
 -
 ### Microservices meets docker
@@ -210,13 +211,9 @@ From monolith to µService
   * https://github.com/docker/swarmkit
   * https://speakerdeck.com/rossbachp/docker-swarmkit
 
--
-### Docker machines
-
-![](images/docker-machine-logo.png)
 
 -
-#### Simple Docker OS
+### Use a Simple Docker OS
 
 * Core OS
 * Rancher OS
@@ -312,123 +309,21 @@ From monolith to µService
 * use Docker > 1.13.x
 
 -
-### Docker machine provision
+### Play with Docker
 
-![](images/docker-machine-logo.png)
-
-***
-* https://github.com/zchee/docker-machine-driver-xhyve
-* https://github.com/scaleway/docker-machine-driver-scaleway
-* https://github.com/bee42/docker-machine-scaleway-creator
-
--
-### Install Docker Machine
-
-* https://docs.docker.com/machine/install-machine/
-
-```
-$ sudo -i
-$ apt-get update && apt-get install -y curl
-$ URL=https://github.com/docker/machine/releases/download/v0.10.0
-$ curl -L $URL/docker-machine-`uname -s`-`uname -m` \
-  > /usr/local/bin/docker-machine
-$ chmod +x /usr/local/bin/docker-machine
-$ URL_C=https://raw.githubusercontent.com/docker/machine/master/contrib
-$ curl -L $URL_C/completion/bash/docker-machine.bash \
-  > /etc/bash_completion.d/docker-machine.bash
-$ exit
-$ docker-machine --version
-```
-
--
-### Start your manage node
-
-* Create your docker-machine
-* Login to this machine
-* Create a cluster manager and worker
-
--
-### Create swarm-master machine : DigitalOcean
-
-```
-$ REGION=asm2
-$ SIZE=1gb
-$ DOT=<token>
-$ docker-machine create \
-    --driver digitalocean \
-    --digitalocean-region $REGION \
-    --digitalocean-size $SIZE\
-    --digitalocean-access-token $DOT \
-    --digitalocean-private-networking \
-    --engine-label "cluster=moby2017" \
-    --engine-label "role=master" \
-    --engine-label "region=$REGION" \
-    swarm-master
-```
+![](images/play-with-docker.png)
 
 ***
-* Create a DigitalOcean account with this promo link
-  * https://m.do.co/c/1b93d52f958f
-* Test Release: `--engine-install-url "https://test.docker.com"`
+* http://play-with-docker.com/
 
 -
-### Setup swarm-master
-
-```
-$ docker $(docker-machine config swarm-master) swarm init \
- --advertise-addr $(docker-machine ip swarm-master):2377
-$ SWARM_TOKEN=`docker $(docker-machine config swarm-master) \
- swarm join-token worker -q`
-```
-
--
-### Create second cluster node - worker
-
-```
-$ REGION=asm2
-$ SIZE=1gb
-$ MACHINE=swarm-01
-$ DOT=
-$ docker-machine create \
-    --driver digitalocean \
-    --digitalocean-region $REGION \
-    --digitalocean-size $SIZE\
-    --digitalocean-access-token $DOT \
-    --digitalocean-private-networking \
-    --engine-label "cluster=moby2016" \
-    --engine-label "role=swarm" \
-    --engine-label "region=$REGION" \
-    $MACHINE
-$ docker $(docker-machine config $MACHINE) swarm join \
- --token $SWARM_TOKEN \
- $(docker-machine ip swarm-master):2377
-```
-
--
-### Create swarm-master cluster at you mac with xhyve
-
-```
-$ brew install docker-machine docker docker-compose docker-machine-driver-xhyve
-# docker-machine-driver-xhyve need root owner and uid
-$ sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
-$ sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
-$ URL=https://github.com/boot2docker/boot2docker/releases/download
-$ for N in $(seq 1 3); do
-  docker-machine create --driver xhyve
-    --xhyve-memory-size 1024 \
-    --xhyve-boot2docker-url "$URL/v17.03.0-ce/boot2docker.iso" \
-    node$N
-done
-```
-
--
-### Use docker machine creator
+### Use docker machine creator - Jump Host
 
 ![](images/scw-creator-overview.png)
 
 ***
 * https://github.com/bee42/docker-machine-scaleway-creator
-
+* https://github.com/bee42/docker-machine-digitalocean-creator
 -
 #### Docker Machine Creator: Services
 
@@ -468,7 +363,7 @@ $ sudo chmod +x /usr/local/bin/dctrl
 
 * Use a whoami service
 * Service Options
-* Docker on ARM
+* Docker service update
   * uuid rolling update
 * Visualizer of docker swarming
 * Monitor docker and services with Prometheus
@@ -499,10 +394,36 @@ Accept: */*
 ```
 
 -
-### Join the new node
+### Create machines and init swarm
 
 ```
-$ MACHINE=xxx
+$ REGION=asm2
+$ SIZE=1gb
+$ DOT=<token>
+$ docker-machine create \
+    --driver digitalocean \
+    --digitalocean-region $REGION \
+    --digitalocean-size $SIZE\
+    --digitalocean-access-token $DOT \
+    --digitalocean-private-networking \
+    --engine-label "cluster=moby2017" \
+    --engine-label "role=master" \
+    --engine-label "region=$REGION" \
+    swarm-master
+```
+
+```
+$ docker $(docker-machine config swarm-master) swarm init \
+ --advertise-addr $(docker-machine ip swarm-master):2377
+$ SWARM_TOKEN=`docker $(docker-machine config swarm-master) \
+ swarm join-token worker -q`
+```
+
+-
+### Create and Join the new node
+
+```
+$ docker-machine ssh <SWARM-MACHINE>
 $ SWARM_TOKEN=`docker $(docker-machine config swarm-master) \
  swarm join-token worker -q`
 $ docker $(docker-machine config $MACHINE) swarm join \
@@ -748,7 +669,7 @@ $ docker service create \
 ![](images/rpi-lab-queenshive.png)
 
 ***
-* https://github.com/bee42/docker-on-rpi-lab
+https://github.com/bee42/docker-on-rpi-lab
 
 -
 ### Rolling service update on a PI-Cluster
@@ -977,7 +898,7 @@ $ docker run -it -d -p 5080:8080 --name visualizer  \
 * https://github.com/ManoMarks/docker-swarm-visualizer
 
 ---
-## Add a easy loadbalancer like Træfɪk
+## Add a easy loadbalancer like Træfik
 
 ![](images/traefik.png)
 
@@ -986,12 +907,12 @@ $ docker run -it -d -p 5080:8080 --name visualizer  \
 * https://github.com/bee42/traefik-with-docker
 
 -
-### Have fun with Træfɪk community
+### Have fun with Træfik community
 
 ![](images/traefik-logo.png)
 
 -
-### Simple Træfɪk one host example
+### Simple Træfik one host example
 
 ```
 traefik:
@@ -1012,7 +933,7 @@ whoami:
 ```
 
 -
-### Træfɪk at docker swarming mode
+### Træfik at docker swarming mode
 
 
 ```
@@ -1064,7 +985,7 @@ $ watch curl -H Host:whoami0.traefik http://$(docker-machine ip manager)
 ```
 
 -
-### Træfɪk Dashboard
+### Træfik Dashboard
 
 ![](images/traefik-ui.png)
 
@@ -1142,6 +1063,17 @@ $ watch curl -H Host:whoami0.traefik http://$(docker-machine ip manager)
   * More options to service create (security and resource handling)
   * Integration of Infrakit
 * Check your networking skills!
+
+---
+### Blue Print Environment
+
+![](images/bee42-cass-environments.png)
+
+-
+### Blue Print Architecture
+
+![](images/bee42-cass-blue-print.png)
+
 
 ---
 ## Summary
